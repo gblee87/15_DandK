@@ -1,0 +1,64 @@
+##
+# 운영 서비스를 담당하는 서비스 어카운트(SA) 작성
+#
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: sysop
+  namespace: prod
+---
+##
+# SA와 클러스터롤 바인딩
+#
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: sysop-crb
+  namespace: prod
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: admin
+subjects:
+- kind: ServiceAccount
+  namespace: prod
+  name: sysop
+
+##---
+##
+# 운영 서비스 담당 롤 작성
+#   클러스터 롤에 포함되므로 필수는 아님 
+#
+#apiVersion: rbac.authorization.k8s.io/v1
+#kind: Role
+#metadata:
+#  name: sysop
+#  namespace: prod
+#rules:
+# 파드 접근 권한, Core API 지정 apiVersion: v1
+#- apiGroups: [""]
+#  resources: ["pods","pods/log","services"]
+#  verbs: ["get", "watch", "list"]
+# deployment 접근 권한, extention/appls 지정
+#- apiGroups: ["extensions", "apps"]  
+#  resources: ["deployments"]
+#  verbs: ["get", "watch", "list"]
+
+---
+##
+# 운영 서비스 담당 SA와 sysop 롤 바인딩
+#   (클러스터 롤에 포함되므로 필수는 아님)
+#
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: sysop-rb
+  namespace: prod
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: sysop
+subjects:
+- kind: ServiceAccount
+  namespace: prod
+  name: sysop

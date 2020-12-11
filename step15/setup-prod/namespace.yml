@@ -1,0 +1,7 @@
+##
+# 운영용 네임스페이스 작성
+#
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: prod         # production
